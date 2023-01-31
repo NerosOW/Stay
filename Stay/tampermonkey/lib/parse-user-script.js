@@ -85,7 +85,9 @@ window.parseUserScript = function(content, url, failWhenMissing=false) {
       'runAt': 'end',
       'pass':true,
       'errorMessage':'',
-      'iconUrl':''
+      'iconUrl':'',
+      'stayEngine':'',
+      'injectInto':'auto'
   };
 
   let meta = extractMeta(content).match(/.+/g);
@@ -200,9 +202,15 @@ window.parseUserScript = function(content, url, failWhenMissing=false) {
           case 'author':
               details.author = data.value;
               break;
+          case 'stay-engine':
+              details.stayEngine = data.value;
+              break;
+          case 'inject-into':
+              details.injectInto = data.value;
+              break;
       }
     }
-//    native.nslog(details);
+    native.nslog(details);
     return prepDefaults(details);
 }
 

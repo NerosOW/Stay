@@ -34,6 +34,8 @@
     userScript.notes = dic[@"notes"];
     userScript.locales = dic[@"locales"];
     userScript.unsupportedGrants = dic[@"unsupportedGrants"];
+    userScript.stayEngine = dic[@"stayEngine"];
+    userScript.injectInto = dic[@"injectInto"];
     return userScript;
 }
 
@@ -55,7 +57,6 @@
         @"noFrames":@(self.noFrames),
         @"requireUrls":self.requireUrls,
         @"content":self.parsedContent ? self.parsedContent : @"",
-        @"pageContent":self.parsedPageContent ? self.parsedPageContent : @"",
         @"active":@(self.active),
         @"updateUrl":self.updateUrl ? self.updateUrl: @"",
         @"downloadUrl":self.downloadUrl ? self.downloadUrl: @"",
@@ -64,7 +65,10 @@
         @"notes":self.notes ? self.notes: @[],
         @"locales":self.locales ? self.locales : @{},
         @"installType":self.installType ? self.installType : @"content",
-        @"unsupportedGrants":self.unsupportedGrants ? self.unsupportedGrants : @[]
+        @"unsupportedGrants":self.unsupportedGrants ? self.unsupportedGrants : @[],
+        @"stayEngine":self.stayEngine ? self.stayEngine : @"",
+        @"excludeSites":self.excludeSites ? self.excludeSites : @[],
+        @"injectInto":self.injectInto ? self.injectInto : @"auto"
     };
 }
 
@@ -112,6 +116,16 @@
     }
     
     return builder;
+}
+
++ (NSString *)localeCode{
+    NSLocale *locale = [NSLocale currentLocale];
+    return [NSString stringWithFormat:@"%@-%@",locale.languageCode,locale.countryCode];
+}
+
++ (NSString *)localeCodeLanguageCodeOnly{
+    NSLocale *locale = [NSLocale currentLocale];
+    return locale.languageCode;
 }
 
 @end

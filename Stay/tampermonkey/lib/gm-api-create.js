@@ -6,13 +6,14 @@
 'use strict';
 
 (function () {
-
     function createGMApisWithUserScript(userscript, uuid, version, scriptWithoutComment, installType) {
         let grants = userscript.grants;
         let source = 'const _uuid = "' + uuid + '";\n\n';
+        source += "let Stay_storage_listeners = [];\n\n";
         source += 'const iconUrl = "' + userscript.icon + '";\n\n';
         source += 'const usName = "' + userscript.name + '";\n\n';
         source += 'const _version = "' + version + '";\n\n';
+        source += `${Stay_notifyValueChangeListeners}\n`;
         native.nslog("createGMApisWithUserScripte-- " + installType);
         if (grants.includes('unsafeWindow') || installType == 'page') {
             native.nslog("page create");
@@ -29,18 +30,6 @@
         source += 'let __RMC_CONTEXT = {};\n\n';
 
         source += 'browser.runtime.sendMessage({ from: "gm-apis", uuid: _uuid, operate: "clear_GM_log" });\n';
-        source += 'browser.runtime.onMessage.addListener((request, sender, sendResponse) => {\n';
-        source += '\t\tlet message_uuid=request.uuid;\nlet UUID_RMC_CONTEXT=__RMC_CONTEXT[_uuid];\n';
-        source += '\t\t\tconsole.log("source___fetchRegisterMenuCommand1111=",message_uuid,_uuid,request,__RMC_CONTEXT);\n';
-        source += '\t\tif (request.from == "background" && request.operate == "fetchRegisterMenuCommand" && message_uuid == _uuid){\n';
-        source += '\t\t\tconsole.log("source___fetchRegisterMenuCommand222=",request,__RMC_CONTEXT);\n';
-        source += '\t\t\tbrowser.runtime.sendMessage({from:"content",data:UUID_RMC_CONTEXT,uuid:_uuid,operate:"giveRegisterMenuCommand"});\n}\n';
-        source += '\t\telse if (request.from == "background" && request.operate == "execRegisterMenuCommand" && message_uuid == _uuid){\n';
-        source += '\t\t\tconsole.log("menuId=",request.id,UUID_RMC_CONTEXT);\n let menuId = request.id;\n let place=-1;\n';
-        source += '\t\tif(UUID_RMC_CONTEXT && UUID_RMC_CONTEXT != "[]" && UUID_RMC_CONTEXT.length>0){\nUUID_RMC_CONTEXT.forEach((item, index)=>{\n\t\tif(item.id == menuId){\nplace = index;\n return false;\n}\n}\n)}';
-        source += '\t\tif(place>=0){\nUUID_RMC_CONTEXT[place]["commandFunc"]();\n}\n}\n';
-        source += '\t\t\treturn true;\n'
-        source += '});\n\n';
 
         if (grants.includes('GM_listValues')) {
             source += 'function GM_listValues (){ return __stroge}\n\n';
@@ -160,6 +149,49 @@
         return source;
     }
 
+    function Stay_notifyValueChangeListeners (name, oldVal, newVal, remote) {
+        if (oldVal == newVal) return;
+        for (var i in Stay_storage_listeners) {
+            if (!Stay_storage_listeners.hasOwnProperty(i)) continue;
+            var n = TM_storage_listeners[i];
+            if (n && n.key == name) {
+                if (n.cb) {
+                    try {
+                        n.cb(name, oldVal, newVal, remote);
+                    } catch (e) {
+                        if (D) console.log("env: value change listener of '" + name + "' failed with: " + e.message);
+                    }
+                }
+            }
+        }
+    }
+
+    function GM_addValueChangeListener (name, cb) {
+        var id = 0;
+        for (var n in Stay_storage_listeners) {
+            if (!Stay_storage_listeners.hasOwnProperty(n)) continue;
+            var i = Stay_storage_listeners[n];
+            if (n.id > id) {
+                id = n.id;
+            }
+        }
+        id++;
+        var s = { id: id, key: name, cb: cb };
+        Stay_storage_listeners.push(s);
+        return id;
+    }
+
+    function GM_removeValueChangeListener(id) {
+        for (var n in Stay_storage_listeners) {
+            if (!Stay_storage_listeners.hasOwnProperty(n)) continue;
+            var i = Stay_storage_listeners[n];
+            if (n.id == id) {
+                delete Stay_storage_listeners[n];
+                return true;
+            }
+        }
+    }
+
     function GM_info(userscript, version) {
         let info = {
             version: version,
@@ -205,13 +237,17 @@
     }
 
     function GM_deleteValue(key) {
+        let old = __stroge[key];
         __stroge[key] = null;
         browser.runtime.sendMessage({ from: "gm-apis", operate: "GM_deleteValue", key: key, uuid: _uuid });
+        Stay_notifyValueChangeListeners(key, old, __stroge[key], false);
     }
 
     function GM_setValue(key, value) {
+        let old = __stroge[key];
         __stroge[key] = value;
         browser.runtime.sendMessage({ from: "gm-apis", operate: "GM_setValue", key: key, value: value, uuid: _uuid });
+        Stay_notifyValueChangeListeners(key, old, __stroge[key], false);
     }
 
     function GM_getValue(key, defaultValue) {
@@ -220,9 +256,12 @@
     }
 
     function deleteValue_p(key) {
+        let old = __stroge[key];
         return new Promise((resolve, reject) => {
             browser.runtime.sendMessage({ from: "gm-apis", operate: "GM_deleteValue", key: key, uuid: _uuid }, (response) => {
+                __stroge[key] = null;
                 resolve(response.body);
+                Stay_notifyValueChangeListeners(key, old, __stroge[key], false);
             });
         });
     }
@@ -230,7 +269,10 @@
     function setValue_p(key, value) {
         return new Promise((resolve, reject) => {
             browser.runtime.sendMessage({ from: "gm-apis", operate: "GM_setValue", key: key, value: value, uuid: _uuid }, (response) => {
+                let old = __stroge[key];
+                __stroge[key] = value;
                 resolve(response.body);
+                Stay_notifyValueChangeListeners(key, old, __stroge[key], false);
             });
         });
     }
@@ -422,6 +464,7 @@
         userInfo["commandFunc"] = commandFunc;
         userInfo["accessKey"] = accessKey;
         userInfo["id"] = pid;
+        userInfo["uuid"] = _uuid;
         
         let UUID_RMC_CONTEXT = __RMC_CONTEXT[_uuid]
         if (!UUID_RMC_CONTEXT || UUID_RMC_CONTEXT == "" || UUID_RMC_CONTEXT == "[]") {
@@ -429,11 +472,36 @@
         }
         UUID_RMC_CONTEXT.push(userInfo);
         __RMC_CONTEXT[_uuid] = UUID_RMC_CONTEXT;
-
-        console.log("gm-api-----GM_registerMenuCommand");
-
-        // browser.runtime.sendMessage({ from: "gm-apis", uuid: _uuid, command_content: userInfo,  operate: "REGISTER_MENU_COMMAND_CONTEXT" });
-         
+        // console.log("gm-api-----GM_registerMenuCommand");
+        browser.runtime.sendMessage({ from: "gm-apis", uuid: _uuid, command_content: userInfo,  operate: "REGISTER_MENU_COMMAND_CONTEXT" });
+        browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+            let message_uuid = request.uuid; 
+            // console.log("create_gmAPI-----execRegisterMenuCommand---1", message_uuid, _uuid, request)
+            if (request.from == "background" && request.operate == "execRegisterMenuCommand" && message_uuid == _uuid) {
+                let MESSAGE_UUID_RMC_CONTEXT = __RMC_CONTEXT[_uuid];
+                let menuId = request.id;
+                let place = -1;
+                // console.log("create_gmAPI-----execRegisterMenuCommand---2", message_uuid, _uuid, MESSAGE_UUID_RMC_CONTEXT)
+                if (MESSAGE_UUID_RMC_CONTEXT && MESSAGE_UUID_RMC_CONTEXT != "[]" && MESSAGE_UUID_RMC_CONTEXT.length > 0) {
+                    try {
+                        MESSAGE_UUID_RMC_CONTEXT.forEach((item, index) => {
+                            if (item.id == menuId) {
+                                place = index;
+                                throw new Error("break");
+                            }
+                        })
+                    } catch (error) {
+                        if (error.message != "break") throw error;
+                    }
+                    // console.log("create_gmAPI-----execRegisterMenuCommand---2", message_uuid, _uuid, place)
+                    if (place>=0){
+                        MESSAGE_UUID_RMC_CONTEXT[place]["commandFunc"]();
+                        sendResponse({ body: [], id: menuId, uuid: message_uuid })
+                    }
+                }
+            }
+            return true;
+        })
         return pid;
     }
 
@@ -443,16 +511,22 @@
             return;
         }
         let place = -1;
-        __UUID_RMC_CONTEXT.forEach((item, index) => {
-            if (item.id == menuId && item.uuid == _uuid) {
-                place = index;
-                return false;
-            }
-        });
+        try {
+            __UUID_RMC_CONTEXT.forEach((item, index) => {
+                if (item.id == menuId && item.uuid == _uuid) {
+                    place = index;
+                    throw new Error("break");
+                }
+            });
+        } catch (error) {
+            if (error.message != "break") throw error;
+        }
+        
         if (place >= 0) {
             let pid = __UUID_RMC_CONTEXT[place].id
             __UUID_RMC_CONTEXT.splice(place, 1);
             __RMC_CONTEXT[_uuid] = __UUID_RMC_CONTEXT;
+            browser.runtime.sendMessage({ from: "gm-apis", uuid: _uuid, menuId: pid, operate: "REGISTER_MENU_COMMAND_CONTEXT" });
         }
     }
 
@@ -478,7 +552,7 @@
             // 通过name获取resource
             // resourceText = await GM_getResourceText_p(name);
             browser.runtime.sendMessage({ from: "gm-apis", operate: "GM_getResourceText", key: name, url: __resourceUrlStroge[name],  uuid: _uuid }, (response) => {
-                console.log("GM_getResourceText send to background-----", response);
+                // console.log("GM_getResourceText send to background-----", response);
                 __resourceTextStroge[name] = response.body;
                 resourceText = response.body;
             });
@@ -490,7 +564,7 @@
     function getResourceText_p(name) {
         return new Promise((resolve, reject) => {
             browser.runtime.sendMessage({ from: "gm-apis", operate: "GM_getResourceText", key: name, url: __resourceUrlStroge[name], uuid: _uuid }, (response) => {
-                console.log("GM_getResourceText_p-----", response);
+                // console.log("GM_getResourceText_p-----", response);
                 resolve(response.body);
             });
         });
@@ -512,7 +586,6 @@
     function getResourceURL_p(name) {
         return new Promise((resolve, reject) => {
             browser.runtime.sendMessage({ from: "gm-apis", operate: "GM_getResourceUrl", key: name, uuid: _uuid }, (response) => {
-
                 // console.log("GM_getResourceURL_p-----",response);
                 resolve(response.body);
             });
@@ -678,7 +751,6 @@
             }
             else if ("GM.openInTab" === grant && !gmFunName.includes("GM_openInTab_async")) {
                 api += `${GM_openInTab_async}\n`;
-                
                 gmFunVals.push("openInTab: GM_openInTab_async");
                 gmFunName.push("GM_openInTab_async");
                 if (!gmFunName.includes("GM_closeTab")){
@@ -700,6 +772,16 @@
                 api += `${GM_notification}\n`;
                 gmFunVals.push("notification: GM_notification");
                 gmFunName.push("GM_notification");
+            }
+            else if (("GM.addValueChangeListener" === grant || "GM_addValueChangeListener" === grant) && !gmFunName.includes("GM_addValueChangeListener")) {
+                api += `${GM_addValueChangeListener}\n`;
+                gmFunVals.push("addValueChangeListener: GM_addValueChangeListener");
+                gmFunName.push("GM_addValueChangeListener");
+            }
+            else if (("GM.removeValueChangeListener" === grant || "GM_removeValueChangeListener" === grant) && !gmFunName.includes("GM_removeValueChangeListener")) {
+                api += `${GM_removeValueChangeListener}\n`;
+                gmFunVals.push("removeValueChangeListener: GM_removeValueChangeListener");
+                gmFunName.push("GM_removeValueChangeListener");
             }
             else if (("GM.setClipboard" === grant || "GM_setClipboard" === grant) && !gmFunName.includes("GM_setClipboard") ) {
                 api += `${GM_setClipboard}\n`;
@@ -744,7 +826,9 @@
             return new Promise(resolve => {
                 const callback = e => {
                     if (e.data.pid !== pid || e.data.id !== _uuid || e.data.name !== "RESP_LIST_VALUES") return;
-                    resolve(e.data.response.body);
+                    console.log("GM_listValues_Async----response=", e.data);
+                    let res = e.data ? (e.data.response ? e.data.response.body : {}): {};
+                    resolve(res);
                     window.removeEventListener("message", callback);
                 };
                 window.addEventListener("message", callback);
@@ -754,16 +838,21 @@
         
 
         function GM_setValueSync(key, value) {
+            let old = __listValuesStroge[key];
+            console.log("GM_setValueSync-----key===", key,",value=",value);
             __listValuesStroge[key] = value;
             window.postMessage({ id: _uuid, name: "API_SET_VALUE_SYNC", key: key, value: value });
+            Stay_notifyValueChangeListeners(key, old, __listValuesStroge[key], false);
         }
 
         function GM_setValue_Async(key, value) {
+            let old = __listValuesStroge[key];
             __listValuesStroge[key] = value;
             const pid = Math.random().toString(36).substring(1, 9);
             return new Promise(resolve => {
                 const callback = e => {
                     if (e.data.pid !== pid || e.data.id !== _uuid || e.data.name !== "RESP_SET_VALUE") return;
+                    Stay_notifyValueChangeListeners(key, old, __listValuesStroge[key], false);
                     resolve(e.data.response);
                     window.removeEventListener("message", callback);
                 };
@@ -797,6 +886,9 @@
                 const callback = e => {
                     // eslint-disable-next-line no-undef -- filename var accessible to the function at runtime
                     if (e.data.pid !== pid || e.data.id !== _uuid || e.data.name !== "RESP_DELETE_VALUE") return;
+                    let old = __listValuesStroge[key];
+                    delete __listValuesStroge[key];
+                    Stay_notifyValueChangeListeners(key, old, __listValuesStroge[key], false);
                     resolve(e.data.response);
                     window.removeEventListener("message", callback);
                 };
@@ -807,6 +899,9 @@
         }
 
         function GM_deleteValue_sync(key) {
+            let old = __listValuesStroge[key];
+            delete __listValuesStroge[key];
+            Stay_notifyValueChangeListeners(key, old, __listValuesStroge[key], false);
             const pid = Math.random().toString(36).substring(1, 9);
             const callback = e => {
                 // eslint-disable-next-line no-undef -- filename var accessible to the function at runtime
@@ -867,7 +962,8 @@
                 const callback = e => {
                     if (e.data.pid !== pid || e.data.id !== _uuid || e.data.name !== "RESP_GET_ALL_REXOURCE_TEXT") return;
                     console.log("GM_getAllResourceText----", e);
-                    resolve(e.data.response.body);
+                    let res = e.data ? (e.data.response ? e.data.response.body : {}) : {};
+                    resolve(res);
                     window.removeEventListener("message", callback);
                 };
                 window.addEventListener("message", callback);
@@ -914,13 +1010,13 @@
 
         function GM_registerMenuCommand(caption, commandFunc, accessKey) {
             let userInfo = {};
-            console.log("GM_registerMenuCommand----", caption, accessKey);
             const pid = Math.random().toString(36).substring(1, 9);
             userInfo["caption"] = caption;
             userInfo["accessKey"] = accessKey;
             userInfo["id"] = pid;
+            userInfo["uuid"] = _uuid;
             userInfo["commandFunc"] = commandFunc;
-            console.log("GM_registerMenuCommand----", userInfo);
+            // console.log("GM_registerMenuCommand----", userInfo);
             window.postMessage({ id: _uuid, pid: pid, name: "REGISTER_MENU_COMMAND_CONTEXT", rmc_context: JSON.stringify(userInfo) });
             let UUID_RMC_CONTEXT = __RMC_CONTEXT[_uuid]
             if (!UUID_RMC_CONTEXT || UUID_RMC_CONTEXT == "" || UUID_RMC_CONTEXT == "[]"){
@@ -928,8 +1024,6 @@
             }
             UUID_RMC_CONTEXT.push(userInfo);
             __RMC_CONTEXT[_uuid] = UUID_RMC_CONTEXT;
-            // __RMC_CONTEXT.push(userInfo);
-           
             window.addEventListener('message', (e) => {
                 if (!e || !e.data || !e.data.name) return;
                 let uuid = e.data.uuid;
@@ -939,38 +1033,49 @@
                     let place = -1;
                     let __UUID_RMC_CONTEXT = __RMC_CONTEXT[uuid]
                     if (__UUID_RMC_CONTEXT && __UUID_RMC_CONTEXT.length > 0) {
-                        __UUID_RMC_CONTEXT.forEach((item, index) => {
-                            if (item.id == menuId) {
-                                place = index;
-                                return false;
-                            }
-                        });
+                        try{
+                            __UUID_RMC_CONTEXT.forEach((item, index) => {
+                                if (item.id == menuId) {
+                                    place = index;
+                                    throw new Error("break");
+                                }
+                            });
+                        }catch(e){
+                            if (e.message != "break") throw e;
+                        }
                         if (place >= 0) {
                             __UUID_RMC_CONTEXT[place]["commandFunc"]();
                         }
                     }
                 }
-            
             });
             return pid;
         }
 
         function GM_unregisterMenuCommand(menuId) {
             let __UUID_RMC_CONTEXT = __RMC_CONTEXT[_uuid]
+            // console.log("GM_unregisterMenuCommand, __UUID_RMC_CONTEXT=1==", __UUID_RMC_CONTEXT, "====menuId=", menuId);
             if (!menuId || __UUID_RMC_CONTEXT.length<=0){
                 return;
             }
             let place = -1;
-            __UUID_RMC_CONTEXT.forEach((item, index)=>{
-                if (item.id == menuId && item.uuid == _uuid){
-                    place = index;
-                    return false;
-                }
-            });
+            try {
+                __UUID_RMC_CONTEXT.forEach((item, index) => {
+                    console.log("GM_unregisterMenuCommand, item===", item,",index=",index);
+                    if (item.id == menuId && item.uuid == _uuid) {
+                        // console.log("GM_unregisterMenuCommand, menuId===", menuId);
+                        place = index;
+                        throw new Error("break");
+                    }
+                });
+            } catch (error) {
+                if (error.message != "break") throw error;
+            }
             if (place>=0){
                 let pid = __UUID_RMC_CONTEXT[place].id
                 __UUID_RMC_CONTEXT.splice(place, 1);
                 __RMC_CONTEXT[_uuid] = __UUID_RMC_CONTEXT;
+                // console.log("GM_unregisterMenuCommand, __UUID_RMC_CONTEXT=2==", __UUID_RMC_CONTEXT);
                 window.postMessage({ id: _uuid, name: "UNREGISTER_MENU_COMMAND_CONTEXT", pid: pid });
             }
         }
@@ -1077,6 +1182,7 @@
             const abort = () => {
                 window.postMessage({ id: _uuid, name: "API_XHR_ABORT_INJ_FROM_CREATE", xhrId: xhrId });
             };
+            // console.log("XHR==request=", details);
             const callback = e => {
                 const name = e.data.name;
                 const response = e.data.response;
@@ -1087,7 +1193,7 @@
                     || !name
                     || !name.startsWith("RESP_API_XHR_TO_CREATE")
                 ) return;
-                console.log("XHR==response=", response);
+                // console.log("XHR==response=", response);
                 if (name === "RESP_API_XHR_TO_CREATE") {
                     console.log("RESP_API_XHR_TO_CREATE----");
                     // ignore
