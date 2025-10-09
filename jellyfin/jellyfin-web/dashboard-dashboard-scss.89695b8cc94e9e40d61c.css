@@ -1,0 +1,1 @@
+.serverInfo{display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;gap:1em;padding:1em}.serverInfo>:nth-child(odd){-webkit-flex:1 0 20%;flex:1 0 20%;font-weight:700;min-width:7.5em}.serverInfo>:nth-child(2n){-webkit-flex:1 0 70%;flex:1 0 70%}
