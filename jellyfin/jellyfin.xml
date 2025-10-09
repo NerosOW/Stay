@@ -1,0 +1,988 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>jellyfin</name>
+    </assembly>
+    <members>
+        <member name="T:Jellyfin.Server.Configuration.CorsPolicyProvider">
+            <summary>
+            Cors policy provider.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Configuration.CorsPolicyProvider.#ctor(MediaBrowser.Controller.Configuration.IServerConfigurationManager)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Configuration.CorsPolicyProvider"/> class.
+            </summary>
+            <param name="serverConfigurationManager">Instance of the <see cref="T:MediaBrowser.Controller.Configuration.IServerConfigurationManager"/> interface.</param>
+        </member>
+        <member name="M:Jellyfin.Server.Configuration.CorsPolicyProvider.GetPolicyAsync(Microsoft.AspNetCore.Http.HttpContext,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.CoreAppHost">
+            <summary>
+            Implementation of the abstract <see cref="T:Emby.Server.Implementations.ApplicationHost" /> class.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.CoreAppHost.#ctor(MediaBrowser.Controller.IServerApplicationPaths,Microsoft.Extensions.Logging.ILoggerFactory,Emby.Server.Implementations.IStartupOptions,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.CoreAppHost" /> class.
+            </summary>
+            <param name="applicationPaths">The <see cref="T:Emby.Server.Implementations.ServerApplicationPaths" /> to be used by the <see cref="T:Jellyfin.Server.CoreAppHost" />.</param>
+            <param name="loggerFactory">The <see cref="T:Microsoft.Extensions.Logging.ILoggerFactory" /> to be used by the <see cref="T:Jellyfin.Server.CoreAppHost" />.</param>
+            <param name="options">The <see cref="T:Jellyfin.Server.StartupOptions" /> to be used by the <see cref="T:Jellyfin.Server.CoreAppHost" />.</param>
+            <param name="startupConfig">The <see cref="T:Microsoft.Extensions.Configuration.IConfiguration" /> to be used by the <see cref="T:Jellyfin.Server.CoreAppHost" />.</param>
+        </member>
+        <member name="M:Jellyfin.Server.CoreAppHost.RegisterServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Jellyfin.Server.CoreAppHost.GetAssembliesWithPartsInternal">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Extensions.ApiApplicationBuilderExtensions">
+            <summary>
+            Extensions for adding API specific functionality to the application pipeline.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Extensions.ApiApplicationBuilderExtensions.UseJellyfinApiSwagger(Microsoft.AspNetCore.Builder.IApplicationBuilder,MediaBrowser.Controller.Configuration.IServerConfigurationManager)">
+            <summary>
+            Adds swagger and swagger UI to the application pipeline.
+            </summary>
+            <param name="applicationBuilder">The application builder.</param>
+            <param name="serverConfigurationManager">The server configuration.</param>
+            <returns>The updated application builder.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Extensions.ApiApplicationBuilderExtensions.UseIPBasedAccessValidation(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds IP based access validation to the application pipeline.
+            </summary>
+            <param name="appBuilder">The application builder.</param>
+            <returns>The updated application builder.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Extensions.ApiApplicationBuilderExtensions.UseLanFiltering(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds LAN based access filtering to the application pipeline.
+            </summary>
+            <param name="appBuilder">The application builder.</param>
+            <returns>The updated application builder.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Extensions.ApiApplicationBuilderExtensions.UseQueryStringDecoding(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Enables url decoding before binding to the application pipeline.
+            </summary>
+            <param name="appBuilder">The <see cref="T:Microsoft.AspNetCore.Builder.IApplicationBuilder"/>.</param>
+            <returns>The updated application builder.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Extensions.ApiApplicationBuilderExtensions.UseBaseUrlRedirection(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds base url redirection to the application pipeline.
+            </summary>
+            <param name="appBuilder">The application builder.</param>
+            <returns>The updated application builder.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Extensions.ApiApplicationBuilderExtensions.UseServerStartupMessage(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds a custom message during server startup to the application pipeline.
+            </summary>
+            <param name="appBuilder">The application builder.</param>
+            <returns>The updated application builder.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Extensions.ApiApplicationBuilderExtensions.UseWebSocketHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds a WebSocket request handler to the application pipeline.
+            </summary>
+            <param name="appBuilder">The application builder.</param>
+            <returns>The updated application builder.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Extensions.ApiApplicationBuilderExtensions.UseRobotsRedirection(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds robots.txt redirection to the application pipeline.
+            </summary>
+            <param name="appBuilder">The application builder.</param>
+            <returns>The updated application builder.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Extensions.ApiApplicationBuilderExtensions.UsePathTrim(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            Adds /emby and /mediabrowser route trimming to the application pipeline.
+            </summary>
+            <remarks>
+            This must be injected before any path related middleware.
+            </remarks>
+            <param name="appBuilder">The application builder.</param>
+            <returns>The updated application builder.</returns>
+        </member>
+        <member name="T:Jellyfin.Server.Extensions.ApiServiceCollectionExtensions">
+            <summary>
+            API specific extensions for the service collection.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Extensions.ApiServiceCollectionExtensions.AddJellyfinApiAuthorization(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds jellyfin API authorization policies to the DI container.
+            </summary>
+            <param name="serviceCollection">The service collection.</param>
+            <returns>The updated service collection.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Extensions.ApiServiceCollectionExtensions.AddCustomAuthentication(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds custom legacy authentication to the service collection.
+            </summary>
+            <param name="serviceCollection">The service collection.</param>
+            <returns>The updated service collection.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Extensions.ApiServiceCollectionExtensions.AddJellyfinApi(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Collections.Generic.IEnumerable{System.Reflection.Assembly},MediaBrowser.Common.Net.NetworkConfiguration)">
+            <summary>
+            Extension method for adding the Jellyfin API to the service collection.
+            </summary>
+            <param name="serviceCollection">The service collection.</param>
+            <param name="pluginAssemblies">An IEnumerable containing all plugin assemblies with API controllers.</param>
+            <param name="config">The <see cref="T:MediaBrowser.Common.Net.NetworkConfiguration"/>.</param>
+            <returns>The MVC builder.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Extensions.ApiServiceCollectionExtensions.AddJellyfinApiSwagger(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds Swagger to the service collection.
+            </summary>
+            <param name="serviceCollection">The service collection.</param>
+            <returns>The updated service collection.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Extensions.ApiServiceCollectionExtensions.AddProxyAddresses(MediaBrowser.Common.Net.NetworkConfiguration,System.String[],Microsoft.AspNetCore.Builder.ForwardedHeadersOptions)">
+            <summary>
+            Sets up the proxy configuration based on the addresses/subnets in <paramref name="allowedProxies"/>.
+            </summary>
+            <param name="config">The <see cref="T:MediaBrowser.Common.Net.NetworkConfiguration"/> containing the config settings.</param>
+            <param name="allowedProxies">The string array to parse.</param>
+            <param name="options">The <see cref="T:Microsoft.AspNetCore.Builder.ForwardedHeadersOptions"/> instance.</param>
+        </member>
+        <member name="T:Jellyfin.Server.Extensions.WebHostBuilderExtensions">
+            <summary>
+            Extensions for configuring the web host builder.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Extensions.WebHostBuilderExtensions.ConfigureWebHostBuilder(Microsoft.AspNetCore.Hosting.IWebHostBuilder,Jellyfin.Server.CoreAppHost,Microsoft.Extensions.Configuration.IConfiguration,MediaBrowser.Common.Configuration.IApplicationPaths,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Configure the web host builder.
+            </summary>
+            <param name="builder">The builder to configure.</param>
+            <param name="appHost">The application host.</param>
+            <param name="startupConfig">The application configuration.</param>
+            <param name="appPaths">The application paths.</param>
+            <param name="logger">The logger.</param>
+            <returns>The configured web host builder.</returns>
+        </member>
+        <member name="T:Jellyfin.Server.Filters.AdditionalModelFilter">
+            <summary>
+            Add models not directly used by the API, but used for discovery and websockets.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Filters.AdditionalModelFilter.#ctor(MediaBrowser.Controller.Configuration.IServerConfigurationManager)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Filters.AdditionalModelFilter"/> class.
+            </summary>
+            <param name="serverConfigurationManager">Instance of the <see cref="T:MediaBrowser.Controller.Configuration.IServerConfigurationManager"/> interface.</param>
+        </member>
+        <member name="M:Jellyfin.Server.Filters.AdditionalModelFilter.Apply(Microsoft.OpenApi.Models.OpenApiDocument,Swashbuckle.AspNetCore.SwaggerGen.DocumentFilterContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Filters.FileRequestFilter">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Filters.FileRequestFilter.Apply(Microsoft.OpenApi.Models.OpenApiOperation,Swashbuckle.AspNetCore.SwaggerGen.OperationFilterContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Filters.FileResponseFilter">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Filters.FileResponseFilter.Apply(Microsoft.OpenApi.Models.OpenApiOperation,Swashbuckle.AspNetCore.SwaggerGen.OperationFilterContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Filters.IgnoreEnumSchemaFilter">
+            <summary>
+            Filter to remove ignored enum values.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Filters.IgnoreEnumSchemaFilter.Apply(Microsoft.OpenApi.Models.OpenApiSchema,Swashbuckle.AspNetCore.SwaggerGen.SchemaFilterContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Filters.ParameterObsoleteFilter">
+            <summary>
+            Mark parameter as deprecated if it has the <see cref="T:Jellyfin.Api.Attributes.ParameterObsoleteAttribute"/>.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Filters.ParameterObsoleteFilter.Apply(Microsoft.OpenApi.Models.OpenApiOperation,Swashbuckle.AspNetCore.SwaggerGen.OperationFilterContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Filters.SecurityRequirementsOperationFilter">
+            <summary>
+            Security requirement operation filter.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Filters.SecurityRequirementsOperationFilter.#ctor(Microsoft.AspNetCore.Authorization.IAuthorizationPolicyProvider)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Filters.SecurityRequirementsOperationFilter"/> class.
+            </summary>
+            <param name="authorizationPolicyProvider">The authorization policy provider.</param>
+        </member>
+        <member name="M:Jellyfin.Server.Filters.SecurityRequirementsOperationFilter.Apply(Microsoft.OpenApi.Models.OpenApiOperation,Swashbuckle.AspNetCore.SwaggerGen.OperationFilterContext)">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.HealthChecks.DbContextFactoryHealthCheck`1">
+            <summary>
+            Implementation of the <see cref="T:Microsoft.Extensions.Diagnostics.HealthChecks.DbContextHealthCheck`1"/> for a <see cref="T:Microsoft.EntityFrameworkCore.IDbContextFactory`1"/>.
+            </summary>
+            <typeparam name="TContext">The type of database context.</typeparam>
+        </member>
+        <member name="M:Jellyfin.Server.HealthChecks.DbContextFactoryHealthCheck`1.#ctor(Microsoft.EntityFrameworkCore.IDbContextFactory{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.HealthChecks.DbContextFactoryHealthCheck`1"/> class.
+            </summary>
+            <param name="contextFactory">Instance of the <see cref="T:Microsoft.EntityFrameworkCore.IDbContextFactory`1"/> interface.</param>
+        </member>
+        <member name="M:Jellyfin.Server.HealthChecks.DbContextFactoryHealthCheck`1.CheckHealthAsync(Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckContext,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Helpers.StartupHelpers">
+            <summary>
+            A class containing helper methods for server startup.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Helpers.StartupHelpers.LogEnvironmentInfo(Microsoft.Extensions.Logging.ILogger,MediaBrowser.Common.Configuration.IApplicationPaths)">
+            <summary>
+            Logs relevant environment variables and information about the host.
+            </summary>
+            <param name="logger">The logger to use.</param>
+            <param name="appPaths">The application paths to use.</param>
+        </member>
+        <member name="M:Jellyfin.Server.Helpers.StartupHelpers.CreateApplicationPaths(Jellyfin.Server.StartupOptions)">
+            <summary>
+            Create the data, config and log paths from the variety of inputs(command line args,
+            environment variables) or decide on what default to use. For Windows it's %AppPath%
+            for everything else the
+            <a href="https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html">XDG approach</a>
+            is followed.
+            </summary>
+            <param name="options">The <see cref="T:Jellyfin.Server.StartupOptions" /> for this instance.</param>
+            <returns><see cref="T:Emby.Server.Implementations.ServerApplicationPaths" />.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Helpers.StartupHelpers.GetUnixSocketPath(Microsoft.Extensions.Configuration.IConfiguration,MediaBrowser.Common.Configuration.IApplicationPaths)">
+            <summary>
+            Gets the path for the unix socket Kestrel should bind to.
+            </summary>
+            <param name="startupConfig">The startup config.</param>
+            <param name="appPaths">The application paths.</param>
+            <returns>The path for Kestrel to bind to.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Helpers.StartupHelpers.SetUnixSocketPermissions(Microsoft.Extensions.Configuration.IConfiguration,System.String,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Sets the unix file permissions for Kestrel's socket file.
+            </summary>
+            <param name="startupConfig">The startup config.</param>
+            <param name="socketPath">The socket path.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="M:Jellyfin.Server.Helpers.StartupHelpers.InitLoggingConfigFile(MediaBrowser.Common.Configuration.IApplicationPaths)">
+            <summary>
+            Initialize the logging configuration file using the bundled resource file as a default if it doesn't exist
+            already.
+            </summary>
+            <param name="appPaths">The application paths.</param>
+            <returns>A task representing the creation of the configuration file, or a completed task if the file already exists.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Helpers.StartupHelpers.InitializeLoggingFramework(Microsoft.Extensions.Configuration.IConfiguration,MediaBrowser.Common.Configuration.IApplicationPaths)">
+            <summary>
+            Initialize Serilog using configuration and fall back to defaults on failure.
+            </summary>
+            <param name="configuration">The configuration object.</param>
+            <param name="appPaths">The application paths.</param>
+        </member>
+        <member name="M:Jellyfin.Server.Helpers.StartupHelpers.PerformStaticInitialization">
+            <summary>
+            Call static initialization methods for the application.
+            </summary>
+        </member>
+        <member name="T:Jellyfin.Server.Infrastructure.SymlinkFollowingPhysicalFileResultExecutor">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Infrastructure.SymlinkFollowingPhysicalFileResultExecutor.#ctor(Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Infrastructure.SymlinkFollowingPhysicalFileResultExecutor"/> class.
+            </summary>
+            <param name="loggerFactory">An instance of the <see cref="T:Microsoft.Extensions.Logging.ILoggerFactory"/> interface.</param>
+        </member>
+        <member name="M:Jellyfin.Server.Infrastructure.SymlinkFollowingPhysicalFileResultExecutor.GetFileInfo(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Infrastructure.SymlinkFollowingPhysicalFileResultExecutor.WriteFileAsync(Microsoft.AspNetCore.Mvc.ActionContext,Microsoft.AspNetCore.Mvc.PhysicalFileResult,Microsoft.Net.Http.Headers.RangeItemHeaderValue,System.Int64)">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.IMigrationRoutine">
+            <summary>
+            Interface that describes a migration routine.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.IMigrationRoutine.Id">
+            <summary>
+            Gets the unique id for this migration. This should never be modified after the migration has been created.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.IMigrationRoutine.Name">
+            <summary>
+            Gets the display name of the migration.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.IMigrationRoutine.PerformOnNewInstall">
+            <summary>
+            Gets a value indicating whether to perform migration on a new install.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.IMigrationRoutine.Perform">
+            <summary>
+            Execute the migration routine.
+            </summary>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.MigrationOptions">
+            <summary>
+            Configuration part that holds all migrations that were applied.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.MigrationOptions.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Migrations.MigrationOptions"/> class.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.MigrationOptions.Applied">
+            <summary>
+            Gets the list of applied migration routine names.
+            </summary>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.MigrationRunner">
+            <summary>
+            The class that knows which migrations to apply and how to apply them.
+            </summary>
+        </member>
+        <member name="F:Jellyfin.Server.Migrations.MigrationRunner._preStartupMigrationTypes">
+            <summary>
+            The list of known pre-startup migrations, in order of applicability.
+            </summary>
+        </member>
+        <member name="F:Jellyfin.Server.Migrations.MigrationRunner._migrationTypes">
+            <summary>
+            The list of known migrations, in order of applicability.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.MigrationRunner.Run(Jellyfin.Server.CoreAppHost,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Run all needed migrations.
+            </summary>
+            <param name="host">CoreAppHost that hosts current version.</param>
+            <param name="loggerFactory">Factory for making the logger.</param>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.MigrationRunner.RunPreStartup(Emby.Server.Implementations.ServerApplicationPaths,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Run all needed pre-startup migrations.
+            </summary>
+            <param name="appPaths">Application paths.</param>
+            <param name="loggerFactory">Factory for making the logger.</param>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.MigrationsFactory">
+            <summary>
+            A factory that can find a persistent file of the migration configuration, which lists all applied migrations.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.MigrationsFactory.GetConfigurations">
+            <inheritdoc/>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.MigrationsListStore">
+            <summary>
+            A configuration that lists all the migration routines that were applied.
+            </summary>
+        </member>
+        <member name="F:Jellyfin.Server.Migrations.MigrationsListStore.StoreKey">
+            <summary>
+            The name of the configuration in the storage.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.MigrationsListStore.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Migrations.MigrationsListStore"/> class.
+            </summary>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.PreStartupRoutines.CreateNetworkConfiguration">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.PreStartupRoutines.CreateNetworkConfiguration.#ctor(Emby.Server.Implementations.ServerApplicationPaths,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Migrations.PreStartupRoutines.CreateNetworkConfiguration"/> class.
+            </summary>
+            <param name="applicationPaths">An instance of <see cref="T:Emby.Server.Implementations.ServerApplicationPaths"/>.</param>
+            <param name="loggerFactory">An instance of the <see cref="T:Microsoft.Extensions.Logging.ILoggerFactory"/> interface.</param>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.PreStartupRoutines.CreateNetworkConfiguration.Id">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.PreStartupRoutines.CreateNetworkConfiguration.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.PreStartupRoutines.CreateNetworkConfiguration.PerformOnNewInstall">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.PreStartupRoutines.CreateNetworkConfiguration.Perform">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateEncodingOptions">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateEncodingOptions.#ctor(Emby.Server.Implementations.ServerApplicationPaths,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateEncodingOptions"/> class.
+            </summary>
+            <param name="applicationPaths">An instance of <see cref="T:Emby.Server.Implementations.ServerApplicationPaths"/>.</param>
+            <param name="loggerFactory">An instance of the <see cref="T:Microsoft.Extensions.Logging.ILoggerFactory"/> interface.</param>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateEncodingOptions.Id">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateEncodingOptions.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateEncodingOptions.PerformOnNewInstall">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateEncodingOptions.Perform">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateMusicBrainzTimeout">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateMusicBrainzTimeout.#ctor(Emby.Server.Implementations.ServerApplicationPaths,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateMusicBrainzTimeout"/> class.
+            </summary>
+            <param name="applicationPaths">An instance of <see cref="T:Emby.Server.Implementations.ServerApplicationPaths"/>.</param>
+            <param name="loggerFactory">An instance of the <see cref="T:Microsoft.Extensions.Logging.ILoggerFactory"/> interface.</param>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateMusicBrainzTimeout.Id">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateMusicBrainzTimeout.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateMusicBrainzTimeout.PerformOnNewInstall">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateMusicBrainzTimeout.Perform">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateNetworkConfiguration">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateNetworkConfiguration.#ctor(Emby.Server.Implementations.ServerApplicationPaths,Microsoft.Extensions.Logging.ILoggerFactory)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateNetworkConfiguration"/> class.
+            </summary>
+            <param name="applicationPaths">An instance of <see cref="T:Emby.Server.Implementations.ServerApplicationPaths"/>.</param>
+            <param name="loggerFactory">An instance of the <see cref="T:Microsoft.Extensions.Logging.ILoggerFactory"/> interface.</param>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateNetworkConfiguration.Id">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateNetworkConfiguration.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateNetworkConfiguration.PerformOnNewInstall">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.PreStartupRoutines.MigrateNetworkConfiguration.Perform">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.AddDefaultCastReceivers">
+            <summary>
+            Migration to add the default cast receivers to the system config.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.AddDefaultCastReceivers.#ctor(MediaBrowser.Controller.Configuration.IServerConfigurationManager)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Migrations.Routines.AddDefaultCastReceivers"/> class.
+            </summary>
+            <param name="serverConfigurationManager">Instance of the <see cref="T:MediaBrowser.Controller.Configuration.IServerConfigurationManager"/> interface.</param>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.AddDefaultCastReceivers.Id">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.AddDefaultCastReceivers.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.AddDefaultCastReceivers.PerformOnNewInstall">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.AddDefaultCastReceivers.Perform">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.AddDefaultPluginRepository">
+            <summary>
+            Migration to initialize system configuration with the default plugin repository.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.AddDefaultPluginRepository.#ctor(MediaBrowser.Controller.Configuration.IServerConfigurationManager)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Migrations.Routines.AddDefaultPluginRepository"/> class.
+            </summary>
+            <param name="serverConfigurationManager">Instance of the <see cref="T:MediaBrowser.Controller.Configuration.IServerConfigurationManager"/> interface.</param>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.AddDefaultPluginRepository.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.AddDefaultPluginRepository.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.AddDefaultPluginRepository.PerformOnNewInstall">
+            <inheritdoc/>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.AddDefaultPluginRepository.Perform">
+            <inheritdoc/>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.CreateUserLoggingConfigFile">
+            <summary>
+            Migration to initialize the user logging configuration file "logging.user.json".
+            If the deprecated logging.json file exists and has a custom config, it will be used as logging.user.json,
+            otherwise a blank file will be created.
+            </summary>
+        </member>
+        <member name="F:Jellyfin.Server.Migrations.Routines.CreateUserLoggingConfigFile._defaultConfigHistory">
+            <summary>
+            File history for logging.json as existed during this migration creation. The contents for each has been minified.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.CreateUserLoggingConfigFile.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.CreateUserLoggingConfigFile.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.CreateUserLoggingConfigFile.PerformOnNewInstall">
+            <inheritdoc/>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.CreateUserLoggingConfigFile.Perform">
+            <inheritdoc/>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.CreateUserLoggingConfigFile.ExistingConfigUnmodified(System.String)">
+            <summary>
+            Check if the existing logging.json file has not been modified by the user by comparing it to all the
+            versions in our git history. Until now, the file has never been migrated after first creation so users
+            could have any version from the git history.
+            </summary>
+            <exception cref="T:System.IO.IOException"><paramref name="oldConfigPath"/> does not exist or could not be read.</exception>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.DisableTranscodingThrottling">
+            <summary>
+            Disable transcode throttling for all installations since it is currently broken for certain video formats.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.DisableTranscodingThrottling.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.DisableTranscodingThrottling.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.DisableTranscodingThrottling.PerformOnNewInstall">
+            <inheritdoc/>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.DisableTranscodingThrottling.Perform">
+            <inheritdoc/>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.FixAudioData">
+            <summary>
+            Fixes the data column of audio types to be deserializable.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.FixAudioData.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.FixAudioData.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.FixAudioData.PerformOnNewInstall">
+            <inheritdoc/>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.FixAudioData.Perform">
+            <inheritdoc/>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.FixPlaylistOwner">
+            <summary>
+            Properly set playlist owner.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.FixPlaylistOwner.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.FixPlaylistOwner.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.FixPlaylistOwner.PerformOnNewInstall">
+            <inheritdoc/>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.FixPlaylistOwner.Perform">
+            <inheritdoc/>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.MigrateActivityLogDb">
+            <summary>
+            The migration routine for migrating the activity log database to EF Core.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.MigrateActivityLogDb.#ctor(Microsoft.Extensions.Logging.ILogger{Jellyfin.Server.Migrations.Routines.MigrateActivityLogDb},MediaBrowser.Controller.IServerApplicationPaths,Microsoft.EntityFrameworkCore.IDbContextFactory{Jellyfin.Server.Implementations.JellyfinDbContext})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Migrations.Routines.MigrateActivityLogDb"/> class.
+            </summary>
+            <param name="logger">The logger.</param>
+            <param name="paths">The server application paths.</param>
+            <param name="provider">The database provider.</param>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MigrateActivityLogDb.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MigrateActivityLogDb.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MigrateActivityLogDb.PerformOnNewInstall">
+            <inheritdoc/>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.MigrateActivityLogDb.Perform">
+            <inheritdoc/>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.MigrateAuthenticationDb">
+            <summary>
+            A migration that moves data from the authentication database into the new schema.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.MigrateAuthenticationDb.#ctor(Microsoft.Extensions.Logging.ILogger{Jellyfin.Server.Migrations.Routines.MigrateAuthenticationDb},Microsoft.EntityFrameworkCore.IDbContextFactory{Jellyfin.Server.Implementations.JellyfinDbContext},MediaBrowser.Controller.IServerApplicationPaths,MediaBrowser.Controller.Library.IUserManager)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Migrations.Routines.MigrateAuthenticationDb"/> class.
+            </summary>
+            <param name="logger">The logger.</param>
+            <param name="dbProvider">The database provider.</param>
+            <param name="appPaths">The server application paths.</param>
+            <param name="userManager">The user manager.</param>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MigrateAuthenticationDb.Id">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MigrateAuthenticationDb.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MigrateAuthenticationDb.PerformOnNewInstall">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.MigrateAuthenticationDb.Perform">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.MigrateDisplayPreferencesDb">
+            <summary>
+            The migration routine for migrating the display preferences database to EF Core.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.MigrateDisplayPreferencesDb.#ctor(Microsoft.Extensions.Logging.ILogger{Jellyfin.Server.Migrations.Routines.MigrateDisplayPreferencesDb},MediaBrowser.Controller.IServerApplicationPaths,Microsoft.EntityFrameworkCore.IDbContextFactory{Jellyfin.Server.Implementations.JellyfinDbContext},MediaBrowser.Controller.Library.IUserManager)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Migrations.Routines.MigrateDisplayPreferencesDb"/> class.
+            </summary>
+            <param name="logger">The logger.</param>
+            <param name="paths">The server application paths.</param>
+            <param name="provider">The database provider.</param>
+            <param name="userManager">The user manager.</param>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MigrateDisplayPreferencesDb.Id">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MigrateDisplayPreferencesDb.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MigrateDisplayPreferencesDb.PerformOnNewInstall">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.MigrateDisplayPreferencesDb.Perform">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.MigrateRatingLevels">
+            <summary>
+            Migrate rating levels to new rating level system.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MigrateRatingLevels.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MigrateRatingLevels.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MigrateRatingLevels.PerformOnNewInstall">
+            <inheritdoc/>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.MigrateRatingLevels.Perform">
+            <inheritdoc/>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.MigrateUserDb">
+            <summary>
+            The migration routine for migrating the user database to EF Core.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.MigrateUserDb.#ctor(Microsoft.Extensions.Logging.ILogger{Jellyfin.Server.Migrations.Routines.MigrateUserDb},MediaBrowser.Controller.IServerApplicationPaths,Microsoft.EntityFrameworkCore.IDbContextFactory{Jellyfin.Server.Implementations.JellyfinDbContext},MediaBrowser.Model.Serialization.IXmlSerializer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Migrations.Routines.MigrateUserDb"/> class.
+            </summary>
+            <param name="logger">The logger.</param>
+            <param name="paths">The server application paths.</param>
+            <param name="provider">The database provider.</param>
+            <param name="xmlSerializer">The xml serializer.</param>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MigrateUserDb.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MigrateUserDb.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MigrateUserDb.PerformOnNewInstall">
+            <inheritdoc/>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.MigrateUserDb.Perform">
+            <inheritdoc/>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.MoveTrickplayFiles">
+            <summary>
+            Migration to move trickplay files to the new directory.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.MoveTrickplayFiles.#ctor(MediaBrowser.Controller.Trickplay.ITrickplayManager,MediaBrowser.Model.IO.IFileSystem,MediaBrowser.Controller.Library.ILibraryManager,Microsoft.Extensions.Logging.ILogger{Jellyfin.Server.Migrations.Routines.MoveTrickplayFiles})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Migrations.Routines.MoveTrickplayFiles"/> class.
+            </summary>
+            <param name="trickplayManager">Instance of the <see cref="T:MediaBrowser.Controller.Trickplay.ITrickplayManager"/> interface.</param>
+            <param name="fileSystem">Instance of the <see cref="T:MediaBrowser.Model.IO.IFileSystem"/> interface.</param>
+            <param name="libraryManager">Instance of the <see cref="T:MediaBrowser.Controller.Library.ILibraryManager"/> interface.</param>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MoveTrickplayFiles.Id">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MoveTrickplayFiles.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.MoveTrickplayFiles.PerformOnNewInstall">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.MoveTrickplayFiles.Perform">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.ReaddDefaultPluginRepository">
+            <summary>
+            Migration to initialize system configuration with the default plugin repository.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.ReaddDefaultPluginRepository.#ctor(MediaBrowser.Controller.Configuration.IServerConfigurationManager)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Migrations.Routines.ReaddDefaultPluginRepository"/> class.
+            </summary>
+            <param name="serverConfigurationManager">Instance of the <see cref="T:MediaBrowser.Controller.Configuration.IServerConfigurationManager"/> interface.</param>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.ReaddDefaultPluginRepository.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.ReaddDefaultPluginRepository.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.ReaddDefaultPluginRepository.PerformOnNewInstall">
+            <inheritdoc/>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.ReaddDefaultPluginRepository.Perform">
+            <inheritdoc/>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.RemoveDownloadImagesInAdvance">
+            <summary>
+            Removes the old 'RemoveDownloadImagesInAdvance' from library options.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.RemoveDownloadImagesInAdvance.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.RemoveDownloadImagesInAdvance.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.RemoveDownloadImagesInAdvance.PerformOnNewInstall">
+            <inheritdoc/>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.RemoveDownloadImagesInAdvance.Perform">
+            <inheritdoc/>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.RemoveDuplicateExtras">
+            <summary>
+            Remove duplicate entries which were caused by a bug where a file was considered to be an "Extra" to itself.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.RemoveDuplicateExtras.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.RemoveDuplicateExtras.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.RemoveDuplicateExtras.PerformOnNewInstall">
+            <inheritdoc/>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.RemoveDuplicateExtras.Perform">
+            <inheritdoc/>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.RemoveDuplicatePlaylistChildren">
+            <summary>
+            Remove duplicate playlist entries.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.RemoveDuplicatePlaylistChildren.Id">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.RemoveDuplicatePlaylistChildren.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.RemoveDuplicatePlaylistChildren.PerformOnNewInstall">
+            <inheritdoc/>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.RemoveDuplicatePlaylistChildren.Perform">
+            <inheritdoc/>
+        </member>
+        <member name="T:Jellyfin.Server.Migrations.Routines.UpdateDefaultPluginRepository">
+            <summary>
+            Migration to update the default Jellyfin plugin repository.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.UpdateDefaultPluginRepository.#ctor(MediaBrowser.Controller.Configuration.IServerConfigurationManager)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Migrations.Routines.UpdateDefaultPluginRepository"/> class.
+            </summary>
+            <param name="serverConfigurationManager">Instance of the <see cref="T:MediaBrowser.Controller.Configuration.IServerConfigurationManager"/> interface.</param>
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.UpdateDefaultPluginRepository.Id">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.UpdateDefaultPluginRepository.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.Migrations.Routines.UpdateDefaultPluginRepository.PerformOnNewInstall">
+            <inheritdoc />
+        </member>
+        <member name="M:Jellyfin.Server.Migrations.Routines.UpdateDefaultPluginRepository.Perform">
+            <inheritdoc />
+        </member>
+        <member name="T:Jellyfin.Server.Program">
+            <summary>
+            Class containing the entry point of the application.
+            </summary>
+        </member>
+        <member name="F:Jellyfin.Server.Program.LoggingConfigFileDefault">
+            <summary>
+            The name of logging configuration file containing application defaults.
+            </summary>
+        </member>
+        <member name="F:Jellyfin.Server.Program.LoggingConfigFileSystem">
+            <summary>
+            The name of the logging configuration file containing the system-specific override settings.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Program.Main(System.String[])">
+            <summary>
+            The entry point of the application.
+            </summary>
+            <param name="args">The command line arguments passed.</param>
+            <returns><see cref="T:System.Threading.Tasks.Task" />.</returns>
+        </member>
+        <member name="M:Jellyfin.Server.Program.CreateAppConfiguration(Jellyfin.Server.StartupOptions,MediaBrowser.Common.Configuration.IApplicationPaths)">
+            <summary>
+            Create the application configuration.
+            </summary>
+            <param name="commandLineOpts">The command line options passed to the program.</param>
+            <param name="appPaths">The application paths.</param>
+            <returns>The application configuration.</returns>
+        </member>
+        <member name="T:Jellyfin.Server.Startup">
+            <summary>
+            Startup configuration for the Kestrel webhost.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.Startup.#ctor(Jellyfin.Server.CoreAppHost)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Jellyfin.Server.Startup" /> class.
+            </summary>
+            <param name="appHost">The server application host.</param>
+        </member>
+        <member name="M:Jellyfin.Server.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Configures the service collection for the webhost.
+            </summary>
+            <param name="services">The service collection.</param>
+        </member>
+        <member name="M:Jellyfin.Server.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Configures the app builder for the webhost.
+            </summary>
+            <param name="app">The application builder.</param>
+            <param name="env">The webhost environment.</param>
+            <param name="appConfig">The application config.</param>
+        </member>
+        <member name="T:Jellyfin.Server.StartupOptions">
+            <summary>
+            Class used by CommandLine package when parsing the command line arguments.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Server.StartupOptions.DataDir">
+            <summary>
+            Gets or sets the path to the data directory.
+            </summary>
+            <value>The path to the data directory.</value>
+        </member>
+        <member name="P:Jellyfin.Server.StartupOptions.NoWebClient">
+            <summary>
+            Gets or sets a value indicating whether the server should not host the web client.
+            </summary>
+        </member>
+        <member name="P:Jellyfin.Server.StartupOptions.WebDir">
+            <summary>
+            Gets or sets the path to the web directory.
+            </summary>
+            <value>The path to the web directory.</value>
+        </member>
+        <member name="P:Jellyfin.Server.StartupOptions.CacheDir">
+            <summary>
+            Gets or sets the path to the cache directory.
+            </summary>
+            <value>The path to the cache directory.</value>
+        </member>
+        <member name="P:Jellyfin.Server.StartupOptions.ConfigDir">
+            <summary>
+            Gets or sets the path to the config directory.
+            </summary>
+            <value>The path to the config directory.</value>
+        </member>
+        <member name="P:Jellyfin.Server.StartupOptions.LogDir">
+            <summary>
+            Gets or sets the path to the log directory.
+            </summary>
+            <value>The path to the log directory.</value>
+        </member>
+        <member name="P:Jellyfin.Server.StartupOptions.FFmpegPath">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.StartupOptions.IsService">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.StartupOptions.PackageName">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.StartupOptions.PublishedServerUrl">
+            <inheritdoc />
+        </member>
+        <member name="P:Jellyfin.Server.StartupOptions.NoDetectNetworkChange">
+            <summary>
+            Gets or sets a value indicating whether the server should not detect network status change.
+            </summary>
+        </member>
+        <member name="M:Jellyfin.Server.StartupOptions.ConvertToConfig">
+            <summary>
+            Gets the command line options as a dictionary that can be used in the .NET configuration system.
+            </summary>
+            <returns>The configuration dictionary.</returns>
+        </member>
+    </members>
+</doc>
